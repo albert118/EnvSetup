@@ -25,7 +25,15 @@ $uwpRubbishApps = @(
     "Microsoft.PowerAutomateDesktop"
     "Microsoft.BingWeather"
     "Microsoft.BingNews",
-    "Microsoft.WindowsMaps"
+    "Microsoft.BingSearch"
+    "Microsoft.WindowsMaps",
+    "*Copilot*",
+    "MSTeams",
+    "Microsoft.Wallet",
+    "Microsoft.OutlookForWindows",
+    "Microsoft.Office.OneNote",
+    "Microsoft.MicrosoftOfficeHub"
+)
 
 # -----------------------------------------------------------------------------
 foreach ($uwp in $uwpRubbishApps) {
@@ -33,3 +41,4 @@ foreach ($uwp in $uwpRubbishApps) {
 }
 
 Write-Host "Removed UWP Apps" -ForegroundColor Green;
+Start-Sleep -Seconds 20

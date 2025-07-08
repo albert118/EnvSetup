@@ -3,67 +3,69 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     exit;
 }
 
+function Get-logicalYesNo([string]$question) {
+do { $sAnswer = Read-Host "$question [Y/N]" } until ($sAnswer.ToUpper()[0] -match '[yYnN]') -ForegroundColor Yellow;
+    return ($sAnswer.ToUpper()[0] -match '[Y]') #return  $True or $False
+}
+
 # -----------------------------------------------------------------------------
 # Source script variables
 
 $configureSystemPreferences = $PSScriptRoot + "\configure-system-preferences.ps1";
 $removeUwpApps = $PSScriptRoot + "\remove-uwp-apps.ps1";
 $setUpChoco = $PSScriptRoot + "\setup-choco.ps1";
-$installDevDependencies = $PSScriptRoot + "\install-dev-dependencies-and-runtimes.ps1";
-$installProductivity = $PSScriptRoot + "\install-productivity.ps1";
-$installEntertainment = $PSScriptRoot + "\install-entertainment.ps1";
-$installCustomEntertainment = $PSScriptRoot + "\install-custom-entertainment.ps1";
+$installDevDependencies = $PSScriptRoot + "\install-dev-deps.ps1";
+$installUtilities = $PSScriptRoot + "\install-utilities.ps1";
+$installUserApps = $PSScriptRoot + "\install-user-apps.ps1";
 $checkWindowsUpdates = $PSScriptRoot + "\check-windows-updates.ps1";
+$removeCortanaAndBing = $PSScriptRoot + "\remove-cortana-and-bing.ps1";
+
+# -----------------------------------------------------------------------------
+# Get user preferences before starting
+
+Write-Host ""
+Write-Host "Configure Prefrences:" -ForegroundColor Green;
+Write-Host "------------------------------------" -ForegroundColor Green;
+
+$shouldInstallDevDeps = Get-logicalYesNo("Install development depenendies?")
+$shouldInstallUtilities = Get-logicalYesNo("Install debugging utilties (Wireshark, etc.)?")
+$willRestart = Get-logicalYesNo("Auto Restart once script completed?")
 
 # -----------------------------------------------------------------------------
 # Run scripts
 
-# Must always happen first!
 & $setUpChoco;
-
 & $configureSystemPreferences;
 & $removeUwpApps;
-
-Write-Host "Please review the system configuration and removed rubbish are as expected" -ForegroundColor Yellow;
-$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+& $removeCortanaAndBing
 
 Write-Host ""
 Write-Host "Installing Applications" -ForegroundColor Green;
 Write-Host "------------------------------------" -ForegroundColor Green;
 
+& $installUserApps;
 
-Write-Host "Install custom entertainment (Y / N) ?"  $installCustom  -ForegroundColor Yellow;
-
-if ($installCustom -eq "Y") {
-    & $installCustomEntertainment;
-}
-
-Write-Host "Install dev dependencies (Y / N) ?"  $installDev  -ForegroundColor Yellow;
-
-if ($installDev -eq "Y") {
+if ($shouldInstallDevDeps) {
     & $installDevDependencies;
 }
 
-Write-Host "Please review the development dependencies and configuration are as expected" -ForegroundColor Yellow;
-$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
-
-& $installProductivity;
-& $installEntertainment;
-Write-Host "Please review the productivity and entertainment installation is as expected" -ForegroundColor Yellow;
-$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+if ($shouldInstallUtilities) {
+    & $installUtilities;
+}
 
 # Updates take a long time, check these last
 & $checkWindowsUpdates;
 
 # -----------------------------------------------------------------------------
 Write-Host "------------------------------------" -ForegroundColor Green;
-Read-Host -Prompt "Setup is done, restart is needed, press [ENTER] to once logs review to (optionally) restart";
+Read-Host -Prompt "Setup is done, a restart is required";
 
-Write-Host "Ready to restart and apply changes (Y / N) ?"  $willRestart  -ForegroundColor Yellow;
-
-if ($willRestart -eq "Y") {
-    Write-Host -NoNewLine "Computer will restart on next keystroke";
+if ($willRestart) {
+    Write-Host -NoNewLine "Restarting in 20s";
+    Start-Sleep -Seconds 20
+    Restart-Computer;
+} else {
+    Write-Host -NoNewLine "Computer will restart on next keystroke - do so once you've reviewed the logs";
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
-
     Restart-Computer;
 }

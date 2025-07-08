@@ -1,5 +1,10 @@
 # -----------------------------------------------------------------------------
 
+$devApps = @(
+    "git",
+    "docker-desktop"
+)
+
 # Choose your editors here
 $editors = @(
     "vscode"
@@ -12,7 +17,6 @@ $editors = @(
     "resharper"
     "microsoft-windows-terminal"
 )
-
 
 $vscodeExtensions = @(
     # Python
@@ -48,7 +52,6 @@ $vscodeExtensions = @(
     "trond-snekvik.simple-rst" # RST tool
 )
 
-
 # Note: vc runtimes are for all since 2005!!!
 #   If you have any issues uninstall all but 2017/19
 $langsAndRuntimes = @(
@@ -66,10 +69,26 @@ function InstallApps([string[]]$Apps)
     }
 }
 
+Write-Host ""
+Write-Host "Enable Windows 10 Developer Mode" -ForegroundColor Green
+Write-Host "------------------------------------" -ForegroundColor Green
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
+
+
+Write-Host "Config Firacode font" -ForegroundColor Green
+Write-Host "------------------------------------" -ForegroundColor Green
+choco install "firacode" -y
+
 # -----------------------------------------------------------------------------
+
+Write-Host "Install Dev Apps (including Git)" -ForegroundColor Green
+Write-Host "------------------------------------" -ForegroundColor Green
+
+InstallApps -Apps $devApps
 
 Write-Host "Setting up runtimes" -ForegroundColor Green
 InstallApps -Apps $langsAndRuntimes
+
 
 Write-Host ""
 Write-Host "    WSL" -ForegroundColor Green
@@ -150,4 +169,5 @@ Write-Host "      Adding default .ssh directory"  -ForegroundColor Green
 
 mkdir .ssh
 
-Write-Host "Development Depenedencies were installed";
+Write-Host "Development depenedencies have been installed and configured";
+Write-Host "Please review the various dependencies are installed and configured as expected (a shell restart is recommended for PATH updates)" -ForegroundColor Yellow;

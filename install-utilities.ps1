@@ -1,12 +1,15 @@
 # -----------------------------------------------------------------------------
 
-# not much - keep it simple.
-$entertainment = @(
-    # "vlc"
-    "steam"
-    "plex"
-    "spotify"
+$utilities = @(
+    "putty"
+    "pingplotter"
+    "wireshark"
+    "windirstat"
+    "wget"
+    "openssl.light"
+    "hfsexplorer"
 )
+
 
 # -----------------------------------------------------------------------------
 function InstallApps([string[]]$Apps)
@@ -18,6 +21,7 @@ function InstallApps([string[]]$Apps)
 
 # -----------------------------------------------------------------------------
 
-Write-Host "Minimal entertainment - installing just the basics" -ForegroundColor Green
-InstallApps -Apps $entertainment
-Write-Host "Entertainment installation completed" -ForegroundColor Green;
+Write-Host "Setting up utilities" -ForegroundColor Green
+InstallApps -Apps $utilities
+
+Write-Host "Utility installation compeleted" -ForegroundColor Green;
