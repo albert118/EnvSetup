@@ -41,4 +41,3 @@ foreach ($uwp in $uwpRubbishApps) {
 }
 
 Write-Host "Removed UWP Apps" -ForegroundColor Green;
-Start-Sleep -Seconds 20
